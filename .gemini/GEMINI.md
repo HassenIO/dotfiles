@@ -1,0 +1,1 @@
+@/Users/hassen/.config/agents/AGENTS.md
