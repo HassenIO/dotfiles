@@ -368,4 +368,5 @@ vim.keymap.set("n", "<leader>T", ":TestFile<CR>", { desc = "Test: run current fi
 vim.keymap.set("n", "<leader>r", ":!rubocop -A --no-color %<CR>", { desc = "Rubocop: fix current file" })
 vim.keymap.set("n", "<leader>R", ":!rubocop -A --no-color .<CR>", { desc = "Rubocop: fix whole project" })
 vim.keymap.set("n", "<C-s>", ":HopPattern<CR>", { desc = "Hop: jump to a pattern" })
+vim.keymap.set("n", "<leader>;", ":Telescope keymaps<CR>", { desc = "Telescope: search keymaps" })
 
