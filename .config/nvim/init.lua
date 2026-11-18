@@ -351,21 +351,21 @@ end
 --
 -- My custom Keymaps
 --
-vim.api.nvim_set_keymap('n', '=-', 'gg=G', { noremap = true, silent = true }) -- Format entire file
+vim.keymap.set("n", "=-", "gg=G", { silent = true, desc = "Re-indent the whole file" })
 
 --
 -- Keymaps to use plugins
 --
-vim.keymap.set("n", "<C-N>", ":NnnPicker %:p:h<CR>")
-vim.keymap.set("n", "<C-P>", ":Telescope find_files<CR>")
-vim.keymap.set("n", "<C-B>", ":Telescope buffers<CR>")
-vim.keymap.set("n", "<C-/>", ":Telescope live_grep<CR>")
-vim.keymap.set("n", "<C-_>", ":Telescope live_grep<CR>") -- what most terminals send for Ctrl-/
-vim.keymap.set("n", "<C-G>", ":Telescope git_status<CR>")
-vim.keymap.set("n", "<C-S-D>", ":Gdiffsplit<CR>")
-vim.keymap.set("n", "<leader>t", ":TestNearest<CR>")
-vim.keymap.set("n", "<leader>T", ":TestFile<CR>")
-vim.keymap.set("n", "<leader>r", ":!rubocop -A --no-color %<CR>")
-vim.keymap.set("n", "<leader>R", ":!rubocop -A --no-color .<CR>")
-vim.keymap.set("n", "<C-s>", ":HopPattern<CR>")
+vim.keymap.set("n", "<C-N>", ":NnnPicker %:p:h<CR>", { desc = "nnn: pick a file in this file's folder" })
+vim.keymap.set("n", "<C-P>", ":Telescope find_files<CR>", { desc = "Telescope: find files" })
+vim.keymap.set("n", "<C-B>", ":Telescope buffers<CR>", { desc = "Telescope: open buffers" })
+vim.keymap.set("n", "<C-/>", ":Telescope live_grep<CR>", { desc = "Telescope: live grep" })
+vim.keymap.set("n", "<C-_>", ":Telescope live_grep<CR>", { desc = "Telescope: live grep" }) -- what most terminals send for Ctrl-/
+vim.keymap.set("n", "<C-G>", ":Telescope git_status<CR>", { desc = "Telescope: git status" })
+vim.keymap.set("n", "<C-S-D>", ":Gdiffsplit<CR>", { desc = "Fugitive: diff against git" })
+vim.keymap.set("n", "<leader>t", ":TestNearest<CR>", { desc = "Test: run nearest test" })
+vim.keymap.set("n", "<leader>T", ":TestFile<CR>", { desc = "Test: run current file" })
+vim.keymap.set("n", "<leader>r", ":!rubocop -A --no-color %<CR>", { desc = "Rubocop: fix current file" })
+vim.keymap.set("n", "<leader>R", ":!rubocop -A --no-color .<CR>", { desc = "Rubocop: fix whole project" })
+vim.keymap.set("n", "<C-s>", ":HopPattern<CR>", { desc = "Hop: jump to a pattern" })
 
