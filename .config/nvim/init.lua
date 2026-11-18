@@ -359,7 +359,8 @@ vim.api.nvim_set_keymap('n', '=-', 'gg=G', { noremap = true, silent = true }) --
 vim.keymap.set("n", "<C-N>", ":NnnPicker %:p:h<CR>")
 vim.keymap.set("n", "<C-P>", ":Telescope find_files<CR>")
 vim.keymap.set("n", "<C-B>", ":Telescope buffers<CR>")
-vim.keymap.set("n", "<C-S-F>", ":Telescope live_grep<CR>")
+vim.keymap.set("n", "<C-/>", ":Telescope live_grep<CR>")
+vim.keymap.set("n", "<C-_>", ":Telescope live_grep<CR>") -- what most terminals send for Ctrl-/
 vim.keymap.set("n", "<C-G>", ":Telescope git_status<CR>")
 vim.keymap.set("n", "<C-S-D>", ":Gdiffsplit<CR>")
 vim.keymap.set("n", "<leader>t", ":TestNearest<CR>")
