@@ -400,7 +400,31 @@ vim.api.nvim_create_autocmd("VimEnter", {
             width = math.max(width, #label(km.lhs))
         end
 
-        local rows = { "Custom keymaps", "" }
+        local rows = {
+            "Welcome Hassen",
+            "",
+            os.date("%A %d %B %Y, %H:%M"),
+            vim.fn.fnamemodify(vim.fn.getcwd(), ":~"),
+        }
+
+        local branch = vim.fn.systemlist({ "git", "branch", "--show-current" })
+        if vim.v.shell_error == 0 then
+            local added, edited, deleted = 0, 0, 0
+            for _, line in ipairs(vim.fn.systemlist({ "git", "status", "--porcelain", "--untracked-files=all" })) do
+                local code = line:sub(1, 2)
+                if code == "??" or code:find("A") then
+                    added = added + 1
+                elseif code:find("D") then
+                    deleted = deleted + 1
+                else
+                    edited = edited + 1
+                end
+            end
+            table.insert(rows, string.format("Git branch %s: %d added, %d edited, %d deleted",
+                branch[1] ~= nil and branch[1] ~= "" and branch[1] or "(detached HEAD)", added, edited, deleted))
+        end
+
+        vim.list_extend(rows, { "", "Custom keymaps", "" })
         for _, km in ipairs(custom_keymaps) do
             table.insert(rows, label(km.lhs) .. string.rep(" ", width - #label(km.lhs) + 4) .. km.desc)
         end
