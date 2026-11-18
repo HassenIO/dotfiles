@@ -424,18 +424,24 @@ vim.api.nvim_create_autocmd("VimEnter", {
                 branch[1] ~= nil and branch[1] ~= "" and branch[1] or "(detached HEAD)", added, edited, deleted))
         end
 
-        vim.list_extend(rows, { "", "Custom keymaps", "" })
+        local separator = "\0separator" -- replaced by a line as wide as the block below
+        vim.list_extend(rows, { "", separator, "", "Custom keymaps", "" })
         for _, km in ipairs(custom_keymaps) do
             table.insert(rows, label(km.lhs) .. string.rep(" ", width - #label(km.lhs) + 4) .. km.desc)
         end
 
         -- Center the block in the window
         local block = 0
-        for _, row in ipairs(rows) do block = math.max(block, #row) end
+        for _, row in ipairs(rows) do
+            if row ~= separator then block = math.max(block, vim.fn.strdisplaywidth(row)) end
+        end
         local indent = string.rep(" ", math.max(0, math.floor((vim.o.columns - block) / 2)))
         local lines = {}
         for _ = 1, math.max(0, math.floor((vim.o.lines - #rows) / 3)) do table.insert(lines, "") end
-        for _, row in ipairs(rows) do table.insert(lines, row == "" and "" or indent .. row) end
+        for _, row in ipairs(rows) do
+            if row == separator then row = string.rep("─", block) end
+            table.insert(lines, row == "" and "" or indent .. row)
+        end
 
         vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
         vim.bo[buf].modifiable = false
