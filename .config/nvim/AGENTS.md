@@ -42,3 +42,21 @@ nvim --headless "+checkhealth lazy" "+w! /tmp/health.txt" +qa && grep -iE "error
 ```
 
 To check the welcome screen, start `nvim` with no arguments from any directory.
+
+## Git: this folder is part of a bare dotfiles repo
+
+`~/.config/nvim` has no `.git` folder of its own. It is tracked by the bare repo `~/.dotfiles`, whose work tree is `$HOME`. The remote is `git@github.com:HassenIO/dotfiles.git` and the branch is `main`.
+
+- **Never run `git init` here**, and don't use plain `git`, which will report "not a git repository".
+- Run git through the `git dotfiles` alias from `~`. It is defined in `~/.gitconfig` as `!git --git-dir=$HOME/.dotfiles --work-tree=$HOME`.
+- The repo hides untracked files, so new files don't show up in `status`. Add each file by explicit path. Never use `git dotfiles add -A` or `add .`, because either would stage the whole home directory. Leave out `.DS_Store`.
+- Commit straight to `main`. Write short, imperative messages that mention "NeoVIM", e.g. `Open MDX files as Markdown in NeoVIM`.
+
+```sh
+cd ~
+git dotfiles status --short -- .config/nvim     # tracked changes only
+git dotfiles ls-files .config/nvim              # what is tracked
+git dotfiles add .config/nvim/init.lua .config/nvim/lua/plugins/new.lua
+git dotfiles commit -m "Add <thing> to NeoVIM"
+git dotfiles push origin main
+```
