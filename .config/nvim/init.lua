@@ -264,6 +264,9 @@ vim.wo.signcolumn = "yes"
 -- example: vim.cmd.colorscheme "catppuccin-mocha"
 vim.o.termguicolors = true
 
+-- Treat MDX as Markdown (Neovim has no mdx filetype)
+vim.filetype.add({ extension = { mdx = "markdown" } })
+
 -- Disable intro message
 vim.opt.shortmess:append("I")
 
