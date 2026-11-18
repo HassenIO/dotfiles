@@ -348,25 +348,81 @@ for _, plugin in pairs(disabled_built_ins) do
     vim.g["loaded_" .. plugin] = 1
 end
 
+-- Custom keymaps are recorded here so the welcome screen can list them
+local custom_keymaps = {}
+local function map(lhs, rhs, desc, opts)
+    vim.keymap.set("n", lhs, rhs, vim.tbl_extend("force", { desc = desc }, opts or {}))
+    table.insert(custom_keymaps, { lhs = lhs, desc = desc })
+end
+
 --
 -- My custom Keymaps
 --
-vim.keymap.set("n", "=-", "gg=G", { silent = true, desc = "Re-indent the whole file" })
+map("=-", "gg=G", "Re-indent the whole file", { silent = true })
 
 --
 -- Keymaps to use plugins
 --
-vim.keymap.set("n", "<C-N>", ":NnnPicker %:p:h<CR>", { desc = "nnn: pick a file in this file's folder" })
-vim.keymap.set("n", "<C-P>", ":Telescope find_files<CR>", { desc = "Telescope: find files" })
-vim.keymap.set("n", "<C-B>", ":Telescope buffers<CR>", { desc = "Telescope: open buffers" })
-vim.keymap.set("n", "<C-/>", ":Telescope live_grep<CR>", { desc = "Telescope: live grep" })
+map("<C-N>", ":NnnPicker %:p:h<CR>", "nnn: pick a file in this file's folder")
+map("<C-P>", ":Telescope find_files<CR>", "Telescope: find files")
+map("<C-B>", ":Telescope buffers<CR>", "Telescope: open buffers")
+map("<C-/>", ":Telescope live_grep<CR>", "Telescope: live grep")
 vim.keymap.set("n", "<C-_>", ":Telescope live_grep<CR>", { desc = "Telescope: live grep" }) -- what most terminals send for Ctrl-/
-vim.keymap.set("n", "<C-G>", ":Telescope git_status<CR>", { desc = "Telescope: git status" })
-vim.keymap.set("n", "<C-S-D>", ":Gdiffsplit<CR>", { desc = "Fugitive: diff against git" })
-vim.keymap.set("n", "<leader>t", ":TestNearest<CR>", { desc = "Test: run nearest test" })
-vim.keymap.set("n", "<leader>T", ":TestFile<CR>", { desc = "Test: run current file" })
-vim.keymap.set("n", "<leader>r", ":!rubocop -A --no-color %<CR>", { desc = "Rubocop: fix current file" })
-vim.keymap.set("n", "<leader>R", ":!rubocop -A --no-color .<CR>", { desc = "Rubocop: fix whole project" })
-vim.keymap.set("n", "<C-s>", ":HopPattern<CR>", { desc = "Hop: jump to a pattern" })
-vim.keymap.set("n", "<leader>;", ":Telescope keymaps<CR>", { desc = "Telescope: search keymaps" })
+map("<C-G>", ":Telescope git_status<CR>", "Telescope: git status")
+map("<C-S-D>", ":Gdiffsplit<CR>", "Fugitive: diff against git")
+map("<leader>t", ":TestNearest<CR>", "Test: run nearest test")
+map("<leader>T", ":TestFile<CR>", "Test: run current file")
+map("<leader>r", ":!rubocop -A --no-color %<CR>", "Rubocop: fix current file")
+map("<leader>R", ":!rubocop -A --no-color .<CR>", "Rubocop: fix whole project")
+map("<C-s>", ":HopPattern<CR>", "Hop: jump to a pattern")
+map("<leader>;", ":Telescope keymaps<CR>", "Telescope: search keymaps")
+
+--
+-- Welcome screen: list the custom keymaps when starting without a file
+--
+vim.api.nvim_create_autocmd("VimEnter", {
+    callback = function()
+        local buf = vim.api.nvim_get_current_buf()
+        if vim.fn.argc() > 0 or vim.api.nvim_buf_get_name(buf) ~= ""
+            or vim.bo[buf].modified or vim.api.nvim_buf_line_count(buf) > 1 then
+            return
+        end
+
+        local function label(lhs)
+            local s = lhs:gsub("<leader>", vim.g.mapleader)
+            s = s:gsub("<C%-S%-(.)>", "Ctrl-Shift-%1")
+            s = s:gsub("<C%-(.)>", function(k) return "Ctrl-" .. k:upper() end)
+            return s
+        end
+
+        local width = 0
+        for _, km in ipairs(custom_keymaps) do
+            width = math.max(width, #label(km.lhs))
+        end
+
+        local rows = { "Custom keymaps", "" }
+        for _, km in ipairs(custom_keymaps) do
+            table.insert(rows, label(km.lhs) .. string.rep(" ", width - #label(km.lhs) + 4) .. km.desc)
+        end
+
+        -- Center the block in the window
+        local block = 0
+        for _, row in ipairs(rows) do block = math.max(block, #row) end
+        local indent = string.rep(" ", math.max(0, math.floor((vim.o.columns - block) / 2)))
+        local lines = {}
+        for _ = 1, math.max(0, math.floor((vim.o.lines - #rows) / 3)) do table.insert(lines, "") end
+        for _, row in ipairs(rows) do table.insert(lines, row == "" and "" or indent .. row) end
+
+        vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+        vim.bo[buf].modifiable = false
+        vim.bo[buf].modified = false
+        vim.bo[buf].buftype = "nofile"
+        vim.bo[buf].bufhidden = "wipe"
+        vim.bo[buf].swapfile = false
+        vim.opt_local.number = false
+        vim.opt_local.relativenumber = false
+        vim.opt_local.signcolumn = "no"
+        vim.opt_local.colorcolumn = ""
+    end,
+})
 
